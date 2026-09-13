@@ -112,8 +112,8 @@ const processWiktionaryTranslation = (translation: WiktionaryTranslation): strin
 	let currentIndex = 0;
 	// Translations can be e.g. "take down ( )" where the raw_tags include the meanings that should be substituted inside the parens
 	const tags = [...(translation.tags ?? []), ...(translation.raw_tags ?? [])];
-	const wordWithMeanings = rawWord.replaceAll('( )', () => `(${tags[currentIndex++]})`);
-	return wordWithMeanings.split(/ *, */);
+	const translations = rawWord.split(' , ');
+	return translations.map((it) => it.replaceAll('( )', () => `(${tags[currentIndex++]})`));
 };
 
 const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word>> => {
