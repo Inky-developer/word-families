@@ -49,7 +49,7 @@ const parseGroups = async (): Promise<Word[]> => {
 const parseGroup = (line: string, groupId: number): Word[] => {
 	const parts = line.split(' ');
 	const words = parts.slice(1);
-	return words.map((word) => parseWord(word, groupId)).filter((word) => word.type === 'Verb');
+	return words.map((word) => parseWord(word, groupId));
 };
 
 const WORD_TYPES: Record<string, WordType> = { A: 'Adjective', N: 'Noun', V: 'Verb' };
