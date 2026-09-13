@@ -23,8 +23,7 @@
 			Deutsche Wortfamilien
 		</h1>
 		<p class="mt-3 text-base text-pretty text-paper-500 dark:text-paper-400">
-			Ein Wort suchen und sehen, welche Wörter mit ihm verwandt sind – Ableitungen,
-			Zusammensetzungen und Wortformen aus derselben Familie.
+			Wörterbuch über verwandte Wörter
 		</p>
 	</div>
 

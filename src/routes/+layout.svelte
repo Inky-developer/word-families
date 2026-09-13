@@ -23,7 +23,15 @@
 			>
 				DErivCELEX
 			</a>
-			· Universität Stuttgart
+			· Universität Stuttgart und
+			<a
+				class="underline decoration-paper-300 underline-offset-2 hover:text-ink-600 dark:hover:text-ink-300"
+				href="https://de.wiktionary.org"
+				target="_blank"
+				rel="noreferrer"
+			>
+				Wiktionary
+			</a>
 		</p>
 	</footer>
 </div>

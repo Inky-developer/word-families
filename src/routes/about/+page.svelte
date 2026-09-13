@@ -1,24 +1,24 @@
 <script lang="ts">
+	import github from '$lib/images/github.svg';
 </script>
 
 <svelte:head>
-	<title>About</title>
-	<meta name="description" content="About this app" />
+	<title>Über</title>
+	<meta name="description" content="Über diese App" />
 </svelte:head>
 
-<div class="text-column">
-	<h1>About this app</h1>
+<main class="text-column">
+	<h1 class="text-xl">Über diese App</h1>
 
 	<p>
-		This is a <a href="https://svelte.dev/docs/kit">SvelteKit</a> app. You can make your own by typing
-		the following into your command line and following the prompts:
+		Der Quellcode ist auf
+		<a
+			href="https://github.com/Inky-developer/word-families"
+			class="inline-flex items-center gap-1 text-paper-700 hover:underline dark:text-paper-400"
+		>
+			<img src={github} alt="GitHub" class="h-[1em] w-auto dark:invert" />
+			GitHub
+		</a>
+		verfügbar.
 	</p>
-
-	<pre>npx sv create</pre>
-
-	<p>
-		The page you're looking at is purely static HTML, with no client-side interactivity needed.
-		Because of that, we don't need to load any JavaScript. Try viewing the page's source, or opening
-		the devtools network panel and reloading.
-	</p>
-</div>
+</main>
