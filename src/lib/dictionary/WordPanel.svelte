@@ -87,7 +87,7 @@
 				<h3 class="text-xs tracking-wide text-paper-500 uppercase dark:text-paper-400">
 					Beispiele
 				</h3>
-				<ul class="scroll-thin mt-2 max-h-36 space-y-2 overflow-y-auto overscroll-contain pr-1">
+				<ul class="scroll-thin mt-2 max-h-36 space-y-2 overflow-y-auto pr-1">
 					{#each word.examples as example (example)}
 						<li
 							class="border-l-2 border-ink-500/30 pl-3 font-serif text-sm text-paper-700 italic dark:border-ink-300/30 dark:text-paper-200"
