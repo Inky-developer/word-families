@@ -16,7 +16,8 @@ const combineDataSources = (words: Word[], wiktionaryWords: Map<string, Word>): 
 		const wiktionaryEntry = wiktionaryWords.get(wordKey(word));
 		const examples = wiktionaryEntry?.examples || [];
 		const englishTranslations = wiktionaryEntry?.englishTranslations || [];
-		return { ...word, examples, englishTranslations };
+		const firstPersonSingular = wiktionaryEntry?.firstPersonSingular || [];
+		return { ...word, examples, englishTranslations, firstPersonSingular };
 	});
 
 const readLines = async (fileName: string, onLine: (line: string) => void): Promise<void> =>
@@ -63,7 +64,7 @@ const GROUP_WORD_TYPES: Record<string, WordType> = { A: 'Adjective', N: 'Noun', 
 const parseWord = (rawWord: string, groupId: number): Word => {
 	const [word, rawType] = rawWord.split('_', 2);
 	const type = GROUP_WORD_TYPES[rawType] ?? 'Other';
-	return { word, type, groupId, examples: [], englishTranslations: [] };
+	return { word, type, groupId, examples: [], englishTranslations: [], firstPersonSingular: [] };
 };
 
 const WIKTIONARY_POS_TYPES: Record<string, WordType> = {
@@ -81,9 +82,16 @@ type WiktionarySense = {
 	examples?: WiktionaryExample[];
 };
 
-type WiktionaryTranslations = {
+type WiktionaryTranslation = {
 	lang_code: string;
 	word: string;
+};
+
+type WiktionaryForm = {
+	form: string;
+	// Most rows come from the full conjugation table and carry neither of these.
+	tags?: string[];
+	pronouns?: string[];
 };
 
 type WiktionaryEntry = {
@@ -91,7 +99,8 @@ type WiktionaryEntry = {
 	pos?: string;
 	lang_code?: string;
 	senses?: WiktionarySense[];
-	translations?: WiktionaryTranslations[];
+	translations?: WiktionaryTranslation[];
+	forms?: WiktionaryForm[];
 };
 
 const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word>> => {
@@ -136,8 +145,18 @@ const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word
 					.filter(Boolean) ?? []
 			)
 		];
+		const firstPersonSingular =
+			entry.forms
+				?.filter((form) => form.pronouns?.includes('ich') && form.tags?.includes('present'))
+				?.map((it) => it.form) || [];
 		const key: WordKey = { type, word: entry.word };
-		result.set(wordKey(key), { ...key, examples, englishTranslations, groupId: -1 });
+		result.set(wordKey(key), {
+			...key,
+			examples,
+			englishTranslations,
+			firstPersonSingular,
+			groupId: -1
+		});
 	});
 	console.log(`Finished in ${(performance.now() - startTime) / 1000} s`);
 

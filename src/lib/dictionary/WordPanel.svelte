@@ -39,21 +39,35 @@
 				</a>
 			</h2>
 			<span class="rounded px-1.5 py-0.5 text-xs font-medium {meta.classes}">{meta.label}</span>
-			{#if word.englishTranslations.length > 0}
+			{#if word.firstPersonSingular.length > 0}
 				<span
-					lang="en"
-					class="flex flex-wrap items-baseline gap-x-1.5 font-serif text-sm text-paper-700 italic dark:text-paper-300"
+					class="flex flex-wrap items-baseline gap-x-1.5 font-serif text-sm text-paper-700 dark:text-paper-300"
 				>
-					{#each word.englishTranslations as translation (translation)}
+					{#each word.firstPersonSingular as fps (fps)}
 						<span
 							class="not-first:before:mr-1.5 not-first:before:text-paper-300 not-first:before:content-['·'] dark:not-first:before:text-paper-700"
 						>
-							{translation}
+							ich {word.firstPersonSingular}
 						</span>
 					{/each}
 				</span>
 			{/if}
 		</div>
+
+		{#if word.englishTranslations.length > 0}
+			<span
+				lang="en"
+				class="flex flex-wrap items-baseline gap-x-1.5 font-serif text-sm text-paper-700 italic dark:text-paper-300"
+			>
+				{#each word.englishTranslations as translation (translation)}
+					<span
+						class="not-first:before:mr-1.5 not-first:before:text-paper-300 not-first:before:content-['·'] dark:not-first:before:text-paper-700"
+					>
+						{translation}
+					</span>
+				{/each}
+			</span>
+		{/if}
 
 		<p
 			class="mt-2 text-[0.7rem] font-medium tracking-[0.08em] text-paper-400 uppercase dark:text-paper-500"

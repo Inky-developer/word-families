@@ -15,4 +15,5 @@ export type Word = {
 	groupId: number;
 	examples: string[];
 	englishTranslations: string[];
+	firstPersonSingular: string[];
 };
