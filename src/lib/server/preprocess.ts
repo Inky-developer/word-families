@@ -1,20 +1,26 @@
 import lineReader from 'line-reader';
 
 const WORD_GROUPS_PATH = 'data/word_groups_de.txt';
-const WIKTIONARY_PATH = 'data/wiktionary_de.jsonl';
 
 export type WordType = 'Noun' | 'Verb' | 'Adjective' | 'Other';
+
+export type WordKey = {
+	word: string;
+	type: WordType;
+}
 
 export type Word = {
 	word: string;
 	type: WordType;
 	groupId: number;
+	example?: string;
 };
 
-export const preprocess = async (): Promise<Word[]> => {
+export const preprocess = async (wiktionaryPath: string): Promise<Word[]> => {
 	const wordFromGroups = await parseGroups();
 
-	// const wiktionaryWords = await parseWiktionary();
+	const wiktionaryWords = await parseWiktionary(wiktionaryPath);
+	console.log(wiktionaryWords.size)
 
 	return wordFromGroups;
 };
@@ -78,12 +84,13 @@ type WiktionaryEntry = {
 	lang_code?: string;
 };
 
-const parseWiktionary = async (): Promise<Map<string, WordType>> => {
-	const types = new Map<string, WordType>();
+const parseWiktionary = async (wiktionaryPath: string): Promise<Map<WordKey, Word>> => {
+	const result = new Map<WordKey, Word>();
 
 	let lineNumber = 0;
-	console.log('Starting time: ' + new Date().getTime());
-	await readLines(WIKTIONARY_PATH, (line): void => {
+	const startTime = performance.now();
+	console.log('Processing wiktionary dump');
+	await readLines(wiktionaryPath, (line): void => {
 		lineNumber += 1;
 		if (!line) return;
 
@@ -99,10 +106,9 @@ const parseWiktionary = async (): Promise<Map<string, WordType>> => {
 
 		if (entry.lang_code !== 'de' || !entry.word || !entry.pos) return;
 
-		const type = WIKTIONARY_POS_TYPES[entry.pos];
-		if (type) types.set(entry.word, type);
+		// const type = WIKTIONARY_POS_TYPES[entry.pos];
 	});
-	console.log('Finished time: ' + new Date().getTime());
+	console.log(`Finished in ${(performance.now() - startTime) / 1000} s`);
 
-	return types;
+	return result;
 };
