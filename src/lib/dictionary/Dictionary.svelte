@@ -25,7 +25,13 @@
 
 	<div class="flex min-h-0 flex-1 flex-col">
 		{#if currentWord !== null}
-			<WordPanel {dictionary} word={currentWord} />
+			<WordPanel
+				{dictionary}
+				word={currentWord}
+				onWord={(word) => {
+					currentWord = word;
+				}}
+			/>
 		{:else}
 			<div class="grid flex-1 place-items-center px-6 py-14 text-paper-500 dark:text-paper-400">
 				<div class="max-w-xs text-center">

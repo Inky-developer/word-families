@@ -2,7 +2,11 @@
 	import { type Dictionary, WORD_TYPE_META } from '$lib/dictionary/dictionary';
 	import type { Word } from '$lib/server/preprocess';
 
-	const { word, dictionary }: { word: Word; dictionary: Dictionary } = $props();
+	const {
+		word,
+		onWord,
+		dictionary
+	}: { word: Word; onWord: (word: Word) => void; dictionary: Dictionary } = $props();
 
 	const relatives: Word[] = $derived(
 		dictionary.groups[word.groupId]
@@ -58,12 +62,10 @@
 			{#each relatives as other (other)}
 				{@const otherMeta = WORD_TYPE_META[other.type]}
 				<li>
-					<a
-						href="https://de.wiktionary.org/wiki/{encodeURIComponent(other.word)}"
-						target="_blank"
-						rel="noreferrer"
-						title="{other.word} — {otherMeta.label} auf Wiktionary nachschlagen"
-						class="group flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition-colors hover:bg-paper-100 dark:hover:bg-paper-800/60"
+					<button
+						title="{other.word} — {otherMeta.label} anzeigen"
+						onclick={() => onWord(other)}
+						class="group flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition-colors hover:bg-paper-100 dark:hover:bg-paper-800/60"
 					>
 						<span
 							class="min-w-0 flex-1 truncate text-paper-800 group-hover:text-ink-700 dark:text-paper-100 dark:group-hover:text-ink-300"
@@ -75,21 +77,7 @@
 						>
 							{otherMeta.short}
 						</span>
-						<svg
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							class="size-3.5 shrink-0 text-paper-400 opacity-0 transition-opacity group-hover:opacity-100"
-							aria-hidden="true"
-						>
-							<path
-								d="M14 5h5v5M19 5l-8 8M18 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4"
-							/>
-						</svg>
-					</a>
+					</button>
 				</li>
 			{/each}
 		</ul>
