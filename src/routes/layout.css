@@ -1,0 +1,100 @@
+@import 'tailwindcss';
+
+@theme {
+	--font-sans:
+		ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+		sans-serif;
+	--font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', serif;
+
+	/* Warm paper neutrals */
+	--color-paper-50: hsl(40 40% 98%);
+	--color-paper-100: hsl(40 30% 96%);
+	--color-paper-200: hsl(38 22% 91%);
+	--color-paper-300: hsl(36 16% 83%);
+	--color-paper-400: hsl(34 10% 62%);
+	--color-paper-500: hsl(32 8% 45%);
+	--color-paper-700: hsl(30 10% 26%);
+	--color-paper-800: hsl(28 12% 17%);
+	--color-paper-900: hsl(26 14% 11%);
+
+	/* Ink — the accent */
+	--color-ink-300: hsl(184 44% 62%);
+	--color-ink-500: hsl(186 62% 32%);
+	--color-ink-600: hsl(187 68% 26%);
+	--color-ink-700: hsl(188 70% 20%);
+}
+
+:root {
+	color-scheme: light dark;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	background-color: var(--color-paper-100);
+	background-image:
+		radial-gradient(60rem 40rem at 50% -10%, hsl(186 40% 90% / 0.65) 0%, transparent 70%),
+		radial-gradient(40rem 30rem at 100% 0%, hsl(38 60% 90% / 0.55) 0%, transparent 70%);
+	background-attachment: fixed;
+	color: var(--color-paper-800);
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: var(--color-paper-900);
+		background-image:
+			radial-gradient(60rem 40rem at 50% -10%, hsl(188 50% 18% / 0.7) 0%, transparent 70%),
+			radial-gradient(40rem 30rem at 100% 0%, hsl(30 30% 16% / 0.6) 0%, transparent 70%);
+		color: var(--color-paper-100);
+	}
+}
+
+/* Quieter, thinner scrollbars inside the panes */
+@supports (scrollbar-width: thin) {
+	.scroll-thin {
+		scrollbar-width: thin;
+		scrollbar-color: var(--color-paper-300) transparent;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	.scroll-thin {
+		scrollbar-color: var(--color-paper-700) transparent;
+	}
+}
+
+/* Kept for the leftover `sv create` demo pages (/about, /sverdle) that still
+   reference the template's variables and column helper. */
+:root {
+	--color-bg-0: var(--color-paper-200);
+	--color-bg-1: var(--color-paper-100);
+	--color-bg-2: var(--color-paper-50);
+	--color-theme-1: var(--color-ink-600);
+	--color-theme-2: var(--color-ink-700);
+	--color-text: var(--color-paper-800);
+}
+
+.text-column {
+	display: flex;
+	max-width: 48rem;
+	flex-direction: column;
+	margin: 0 auto;
+}
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: auto;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
