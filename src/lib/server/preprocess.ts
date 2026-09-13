@@ -1,23 +1,7 @@
 import lineReader from 'line-reader';
+import { type Word, type WordKey, wordKey, type WordType } from '$lib/dictionary/types';
 
 const WORD_GROUPS_PATH = 'data/word_groups_de.txt';
-
-export type WordType = 'Noun' | 'Verb' | 'Adjective' | 'Other';
-
-export type WordKey = {
-	word: string;
-	type: WordType;
-};
-
-// Map keys are compared by identity for objects, so composite keys must be serialized.
-const wordKey = ({ word, type }: WordKey): string => `${type}\u0000${word}`;
-
-export type Word = {
-	word: string;
-	type: WordType;
-	groupId: number;
-	examples: string[];
-};
 
 export const preprocess = async (wiktionaryPath: string): Promise<Word[]> => {
 	const wordFromGroups = await parseGroups();
@@ -73,11 +57,11 @@ const parseGroup = (line: string, groupId: number): Word[] => {
 	return words.map((word) => parseWord(word, groupId));
 };
 
-const WORD_TYPES: Record<string, WordType> = { A: 'Adjective', N: 'Noun', V: 'Verb' };
+const GROUP_WORD_TYPES: Record<string, WordType> = { A: 'Adjective', N: 'Noun', V: 'Verb' };
 
 const parseWord = (rawWord: string, groupId: number): Word => {
 	const [word, rawType] = rawWord.split('_', 2);
-	const type = WORD_TYPES[rawType] ?? 'Other';
+	const type = GROUP_WORD_TYPES[rawType] ?? 'Other';
 	return { word, type, groupId, examples: [] };
 };
 
