@@ -29,7 +29,14 @@
 			<h2
 				class="font-serif text-2xl font-semibold wrap-break-word text-paper-900 dark:text-paper-50"
 			>
-				{word.word}
+				<a
+					href="https://de.wiktionary.org/wiki/{word.word}"
+					target="_blank"
+					class="hover:text-ink-700 dark:hover:text-ink-300"
+					title="Show '{word.word}' in wiktionary"
+				>
+					{word.word}
+				</a>
 			</h2>
 			<span class="rounded px-1.5 py-0.5 text-xs font-medium {meta.classes}">{meta.label}</span>
 		</div>
