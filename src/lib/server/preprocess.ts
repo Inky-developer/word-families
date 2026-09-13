@@ -20,12 +20,18 @@ export const preprocess = async (): Promise<Word[]> => {
 };
 
 const readLines = async (fileName: string, onLine: (line: string) => void): Promise<void> =>
-	new Promise((resolve) => {
-		lineReader.eachLine(fileName, (line, last) => {
-			onLine(line);
-			if (last) resolve();
-			return true;
-		});
+	new Promise((resolve, reject) => {
+		lineReader.eachLine(
+			fileName,
+			(line, last) => {
+				onLine(line);
+				if (last) resolve();
+				return true;
+			},
+			(err) => {
+				if (err) reject(err);
+			}
+		);
 	});
 
 const parseGroups = async (): Promise<Word[]> => {
