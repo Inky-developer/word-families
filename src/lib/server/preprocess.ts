@@ -7,23 +7,32 @@ export type WordType = 'Noun' | 'Verb' | 'Adjective' | 'Other';
 export type WordKey = {
 	word: string;
 	type: WordType;
-}
+};
+
+// Map keys are compared by identity for objects, so composite keys must be serialized.
+const wordKey = ({ word, type }: WordKey): string => `${type}\u0000${word}`;
 
 export type Word = {
 	word: string;
 	type: WordType;
 	groupId: number;
-	example?: string;
+	examples: string[];
 };
 
 export const preprocess = async (wiktionaryPath: string): Promise<Word[]> => {
 	const wordFromGroups = await parseGroups();
 
 	const wiktionaryWords = await parseWiktionary(wiktionaryPath);
-	console.log(wiktionaryWords.size)
 
-	return wordFromGroups;
+	return combineDataSources(wordFromGroups, wiktionaryWords);
 };
+
+const combineDataSources = (words: Word[], wiktionaryWords: Map<string, Word>): Word[] =>
+	words.map((word: Word) => {
+		const wiktionaryEntry = wiktionaryWords.get(wordKey(word));
+		const examples = wiktionaryEntry?.examples || [];
+		return { ...word, examples };
+	});
 
 const readLines = async (fileName: string, onLine: (line: string) => void): Promise<void> =>
 	new Promise((resolve, reject) => {
@@ -69,7 +78,7 @@ const WORD_TYPES: Record<string, WordType> = { A: 'Adjective', N: 'Noun', V: 'Ve
 const parseWord = (rawWord: string, groupId: number): Word => {
 	const [word, rawType] = rawWord.split('_', 2);
 	const type = WORD_TYPES[rawType] ?? 'Other';
-	return { word, type, groupId };
+	return { word, type, groupId, examples: [] };
 };
 
 const WIKTIONARY_POS_TYPES: Record<string, WordType> = {
@@ -78,14 +87,24 @@ const WIKTIONARY_POS_TYPES: Record<string, WordType> = {
 	verb: 'Verb'
 };
 
+type WiktionaryExample = {
+	text: string;
+	bold_text_offsets?: number[][];
+};
+
+type WiktionarySense = {
+	examples?: WiktionaryExample[];
+};
+
 type WiktionaryEntry = {
 	word?: string;
 	pos?: string;
 	lang_code?: string;
+	senses?: WiktionarySense[];
 };
 
-const parseWiktionary = async (wiktionaryPath: string): Promise<Map<WordKey, Word>> => {
-	const result = new Map<WordKey, Word>();
+const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word>> => {
+	const result = new Map<string, Word>();
 
 	let lineNumber = 0;
 	const startTime = performance.now();
@@ -106,7 +125,15 @@ const parseWiktionary = async (wiktionaryPath: string): Promise<Map<WordKey, Wor
 
 		if (entry.lang_code !== 'de' || !entry.word || !entry.pos) return;
 
-		// const type = WIKTIONARY_POS_TYPES[entry.pos];
+		const type = WIKTIONARY_POS_TYPES[entry.pos];
+		if (!type) return;
+
+		const examples =
+			entry.senses
+				?.filter((sense) => sense.examples !== undefined)
+				.map((sense) => sense.examples![0].text) ?? [];
+		const key: WordKey = { type, word: entry.word };
+		result.set(wordKey(key), { ...key, examples: examples, groupId: -1 });
 	});
 	console.log(`Finished in ${(performance.now() - startTime) / 1000} s`);
 

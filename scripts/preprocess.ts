@@ -8,7 +8,7 @@ import type { ReadableStream } from 'node:stream/web';
 import { createGunzip } from 'node:zlib';
 
 const WIKTIONARY_URL = 'https://kaikki.org/dictionary/downloads/de/de-extract.jsonl.gz';
-const WIKTIONARY_DIR = "build/";
+const WIKTIONARY_DIR = 'build/';
 const WIKTIONARY_PATH = join(WIKTIONARY_DIR, 'de-extract.jsonl');
 
 const downloadWiktionary = async (): Promise<void> => {

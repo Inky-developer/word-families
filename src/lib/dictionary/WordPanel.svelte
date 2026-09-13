@@ -22,6 +22,7 @@
 			</h2>
 			<span class="rounded px-1.5 py-0.5 text-xs font-medium {meta.classes}">{meta.label}</span>
 		</div>
+
 		<p class="mt-1 text-xs tracking-wide text-paper-500 uppercase dark:text-paper-400">
 			{#if relatives.length === 0}
 				Keine verwandten Wörter
@@ -30,6 +31,21 @@
 			{/if}
 		</p>
 	</header>
+
+	{#if word.examples.length > 0}
+		<section class="shrink-0 border-b border-paper-100 px-6 py-4 dark:border-paper-800">
+			<h3 class="text-xs tracking-wide text-paper-500 uppercase dark:text-paper-400">Beispiele</h3>
+			<ul class="scroll-thin mt-2 max-h-28 space-y-2 overflow-y-auto overscroll-contain pr-1">
+				{#each word.examples as example, index (index)}
+					<li
+						class="border-l-2 border-ink-500/30 pl-3 font-serif text-sm text-paper-700 italic dark:border-ink-300/30 dark:text-paper-200"
+					>
+						{example}
+					</li>
+				{/each}
+			</ul>
+		</section>
+	{/if}
 
 	{#if relatives.length === 0}
 		<p class="px-6 py-10 text-center text-sm text-paper-500 dark:text-paper-400">
