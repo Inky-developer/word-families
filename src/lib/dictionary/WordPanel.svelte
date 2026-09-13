@@ -131,7 +131,10 @@
 			{/snippet}
 
 			{#each WORD_TYPES as wordType (wordType)}
-				{@render related_words(relativesByType[wordType])}
+				{@const group = relativesByType[wordType]}
+				{#if group.length > 0}
+					{@render related_words(group)}
+				{/if}
 			{/each}
 		{/if}
 	</div>
