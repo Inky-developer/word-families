@@ -1,8 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+		<link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
+		<!-- Safari ignores the manifest icons -->
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" />
+		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f6f2" />
+		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#201c18" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
 		%sveltekit.head%

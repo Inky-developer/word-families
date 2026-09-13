@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="512" height="512">
+	<title>Wortfamilien</title>
+	<rect width="24" height="24" rx="5" fill="#15656f" />
+	<g stroke="#fcfbf8" fill="#fcfbf8" stroke-width="1.5" stroke-linecap="round">
+		<path d="M12 4.6v6.4m0 0-3.6 4.4m3.6-4.4 3.6 4.4" fill="none" />
+		<circle cx="12" cy="4" r="1.7" stroke="none" />
+		<circle cx="7.6" cy="17" r="1.7" stroke="none" />
+		<circle cx="16.4" cy="17" r="1.7" stroke="none" />
+	</g>
+</svg>
