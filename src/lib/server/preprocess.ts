@@ -1,5 +1,5 @@
 import lineReader from 'line-reader';
-import { type Word, type WordKey, wordKey, type WordType } from '../dictionary/types.ts';
+import { type Word, wordKey, type WordType } from '../dictionary/types.ts';
 
 const WORD_GROUPS_PATH = 'data/word_groups_de.txt';
 
@@ -103,6 +103,8 @@ type WiktionaryEntry = {
 	forms?: WiktionaryForm[];
 };
 
+const uniques = (...values: string[]) => [...new Set(values)];
+
 const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word>> => {
 	const result = new Map<string, Word>();
 
@@ -128,35 +130,40 @@ const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word
 		const type = WIKTIONARY_POS_TYPES[entry.pos];
 		if (!type) return;
 
-		const examples = [
-			...new Set(
-				entry.senses
-					?.filter((sense) => sense.examples !== undefined)
-					.map((sense) => sense.examples![0].text.trim())
-					.filter(Boolean) ?? []
-			)
-		];
-		const englishTranslations = [
-			...new Set(
-				entry.translations
-					?.filter((trans) => trans.lang_code === 'en')
-					.flatMap((it) => it.word.split(/ *, */))
-					.map((it) => it.trim())
-					.filter(Boolean) ?? []
-			)
-		];
-		const firstPersonSingular =
-			entry.forms
+		const key = wordKey({ type, word: entry.word });
+		const prevWord = result.get(key);
+
+		const examples = uniques(
+			...(prevWord?.examples ?? []),
+			...(entry.senses
+				?.filter((sense) => sense.examples !== undefined)
+				.map((sense) => sense.examples![0].text.trim())
+				.filter(Boolean) ?? [])
+		);
+		const englishTranslations = uniques(
+			...(prevWord?.englishTranslations ?? []),
+			...(entry.translations
+				?.filter((trans) => trans.lang_code === 'en')
+				.flatMap((it) => it.word.split(/ *, */))
+				.map((it) => it.trim())
+				.filter(Boolean) ?? [])
+		);
+		const firstPersonSingular = uniques(
+			...(prevWord?.firstPersonSingular ?? []),
+			...(entry.forms
 				?.filter((form) => form.pronouns?.includes('ich') && form.tags?.includes('present'))
-				?.map((it) => it.form) || [];
-		const key: WordKey = { type, word: entry.word };
-		result.set(wordKey(key), {
-			...key,
+				?.map((it) => it.form) || [])
+		);
+
+		const word = {
+			word: entry.word,
+			type,
 			examples,
 			englishTranslations,
 			firstPersonSingular,
 			groupId: -1
-		});
+		};
+		result.set(key, word);
 	});
 	console.log(`Finished in ${(performance.now() - startTime) / 1000} s`);
 
