@@ -1,10 +1,10 @@
 <script lang="ts">
 	import DictionaryComponent from '$lib/dictionary/Dictionary.svelte';
 	import { Dictionary } from '$lib/dictionary/dictionary';
-	import type { PageProps } from './$types';
+	import data from '$lib/generated/data.json';
+	import type { Word } from '$lib/server/preprocess';
 
-	const { data }: PageProps = $props();
-	const dictionary = $derived(Dictionary.fromWords(data.content));
+	const dictionary = $derived(Dictionary.fromWords(data as Word[]));
 </script>
 
 <svelte:head>
