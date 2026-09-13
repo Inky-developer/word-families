@@ -85,6 +85,8 @@ type WiktionarySense = {
 type WiktionaryTranslation = {
 	lang_code: string;
 	word: string;
+	raw_tags?: string[];
+	tags?: string[];
 };
 
 type WiktionaryForm = {
@@ -104,6 +106,15 @@ type WiktionaryEntry = {
 };
 
 const uniques = (...values: string[]) => [...new Set(values)];
+
+const processWiktionaryTranslation = (translation: WiktionaryTranslation): string[] => {
+	const rawWord = translation.word;
+	let currentIndex = 0;
+	// Translations can be e.g. "take down ( )" where the raw_tags include the meanings that should be substituted inside the parens
+	const tags = [...(translation.tags ?? []), ...(translation.raw_tags ?? [])];
+	const wordWithMeanings = rawWord.replaceAll('( )', () => `(${tags[currentIndex++]})`);
+	return wordWithMeanings.split(/ *, */);
+};
 
 const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word>> => {
 	const result = new Map<string, Word>();
@@ -144,7 +155,7 @@ const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word
 			...(prevWord?.englishTranslations ?? []),
 			...(entry.translations
 				?.filter((trans) => trans.lang_code === 'en')
-				.flatMap((it) => it.word.split(/ *, */))
+				.flatMap((it) => processWiktionaryTranslation(it))
 				.map((it) => it.trim())
 				.filter(Boolean) ?? [])
 		);
