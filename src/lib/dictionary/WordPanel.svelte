@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { type Dictionary, WORD_TYPE_META } from '$lib/dictionary/dictionary';
-	import { type Word, WORD_TYPES, type WordType } from '$lib/dictionary/types';
+	import { type Word, WORD_TYPES, wordKey, type WordType } from '$lib/dictionary/types';
 
 	const {
 		word,
@@ -9,9 +9,7 @@
 	}: { word: Word; onWord: (word: Word) => void; dictionary: Dictionary } = $props();
 
 	const relatives: Word[] = $derived(
-		dictionary.groups[word.groupId]
-			.filter((other) => other.word !== word.word)
-			.sort((a, b) => a.word.localeCompare(b.word, 'de'))
+		dictionary.groups[word.groupId].sort((a, b) => a.word.localeCompare(b.word, 'de'))
 	);
 	const relativesByType = $derived.by(() => {
 		const result: Record<WordType, Word[]> = { Noun: [], Verb: [], Adjective: [], Other: [] };
@@ -108,6 +106,7 @@
 				<ul class="grid min-h-24 grid-cols-1 content-start gap-1 p-3 sm:grid-cols-2">
 					{#each words as other (other)}
 						{@const otherMeta = WORD_TYPE_META[other.type]}
+						{@const selected = wordKey(other) === wordKey(word)}
 						<li>
 							<button
 								title="{other.word} — {otherMeta.label} anzeigen"
@@ -115,7 +114,9 @@
 								class="group flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition-colors hover:bg-paper-100 dark:hover:bg-paper-800/60"
 							>
 								<span
-									class="min-w-0 flex-1 truncate text-paper-800 group-hover:text-ink-700 dark:text-paper-100 dark:group-hover:text-ink-300"
+									class="min-w-0 flex-1 truncate group-hover:text-ink-700 dark:group-hover:text-ink-300 {selected
+										? 'text-ink-700 dark:text-ink-300'
+										: 'text-paper-800 dark:text-paper-100'}"
 								>
 									{other.word}
 								</span>
