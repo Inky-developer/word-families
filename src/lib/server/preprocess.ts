@@ -1,5 +1,5 @@
 import lineReader from 'line-reader';
-import { type Word, type WordKey, wordKey, type WordType } from '$lib/dictionary/types';
+import { type Word, type WordKey, wordKey, type WordType } from '../dictionary/types.ts';
 
 const WORD_GROUPS_PATH = 'data/word_groups_de.txt';
 
@@ -15,7 +15,8 @@ const combineDataSources = (words: Word[], wiktionaryWords: Map<string, Word>): 
 	words.map((word: Word) => {
 		const wiktionaryEntry = wiktionaryWords.get(wordKey(word));
 		const examples = wiktionaryEntry?.examples || [];
-		return { ...word, examples };
+		const englishTranslations = wiktionaryEntry?.englishTranslations || [];
+		return { ...word, examples, englishTranslations };
 	});
 
 const readLines = async (fileName: string, onLine: (line: string) => void): Promise<void> =>
@@ -62,7 +63,7 @@ const GROUP_WORD_TYPES: Record<string, WordType> = { A: 'Adjective', N: 'Noun', 
 const parseWord = (rawWord: string, groupId: number): Word => {
 	const [word, rawType] = rawWord.split('_', 2);
 	const type = GROUP_WORD_TYPES[rawType] ?? 'Other';
-	return { word, type, groupId, examples: [] };
+	return { word, type, groupId, examples: [], englishTranslations: [] };
 };
 
 const WIKTIONARY_POS_TYPES: Record<string, WordType> = {
@@ -80,11 +81,17 @@ type WiktionarySense = {
 	examples?: WiktionaryExample[];
 };
 
+type WiktionaryTranslations = {
+	lang_code: string;
+	word: string;
+};
+
 type WiktionaryEntry = {
 	word?: string;
 	pos?: string;
 	lang_code?: string;
 	senses?: WiktionarySense[];
+	translations?: WiktionaryTranslations[];
 };
 
 const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word>> => {
@@ -112,12 +119,25 @@ const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word
 		const type = WIKTIONARY_POS_TYPES[entry.pos];
 		if (!type) return;
 
-		const examples =
-			entry.senses
-				?.filter((sense) => sense.examples !== undefined)
-				.map((sense) => sense.examples![0].text) ?? [];
+		const examples = [
+			...new Set(
+				entry.senses
+					?.filter((sense) => sense.examples !== undefined)
+					.map((sense) => sense.examples![0].text.trim())
+					.filter(Boolean) ?? []
+			)
+		];
+		const englishTranslations = [
+			...new Set(
+				entry.translations
+					?.filter((trans) => trans.lang_code === 'en')
+					.flatMap((it) => it.word.split(/ *, */))
+					.map((it) => it.trim())
+					.filter(Boolean) ?? []
+			)
+		];
 		const key: WordKey = { type, word: entry.word };
-		result.set(wordKey(key), { ...key, examples: examples, groupId: -1 });
+		result.set(wordKey(key), { ...key, examples, englishTranslations, groupId: -1 });
 	});
 	console.log(`Finished in ${(performance.now() - startTime) / 1000} s`);
 

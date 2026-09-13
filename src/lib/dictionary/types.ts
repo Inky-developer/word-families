@@ -14,4 +14,5 @@ export type Word = {
 	type: WordType;
 	groupId: number;
 	examples: string[];
+	englishTranslations: string[];
 };

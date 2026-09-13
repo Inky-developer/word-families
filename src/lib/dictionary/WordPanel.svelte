@@ -39,9 +39,25 @@
 				</a>
 			</h2>
 			<span class="rounded px-1.5 py-0.5 text-xs font-medium {meta.classes}">{meta.label}</span>
+			{#if word.englishTranslations.length > 0}
+				<span
+					lang="en"
+					class="flex flex-wrap items-baseline gap-x-1.5 font-serif text-sm text-paper-700 italic dark:text-paper-300"
+				>
+					{#each word.englishTranslations as translation (translation)}
+						<span
+							class="not-first:before:mr-1.5 not-first:before:text-paper-300 not-first:before:content-['·'] dark:not-first:before:text-paper-700"
+						>
+							{translation}
+						</span>
+					{/each}
+				</span>
+			{/if}
 		</div>
 
-		<p class="mt-1 text-xs tracking-wide text-paper-500 uppercase dark:text-paper-400">
+		<p
+			class="mt-2 text-[0.7rem] font-medium tracking-[0.08em] text-paper-400 uppercase dark:text-paper-500"
+		>
 			{#if relatives.length === 0}
 				Keine verwandten Wörter
 			{:else}
@@ -57,7 +73,7 @@
 					Beispiele
 				</h3>
 				<ul class="scroll-thin mt-2 max-h-36 space-y-2 overflow-y-auto overscroll-contain pr-1">
-					{#each word.examples as example, index (index)}
+					{#each word.examples as example (example)}
 						<li
 							class="border-l-2 border-ink-500/30 pl-3 font-serif text-sm text-paper-700 italic dark:border-ink-300/30 dark:text-paper-200"
 						>
