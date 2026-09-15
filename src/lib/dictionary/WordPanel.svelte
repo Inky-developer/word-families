@@ -38,15 +38,15 @@
 			</h2>
 			<span class="rounded px-1.5 py-0.5 text-xs font-medium {meta.classes}">{meta.label}</span>
 
-			{#if word.firstPersonSingular.length > 0}
+			{#if word.conjugation.length > 0}
 				<span
 					class="flex flex-wrap items-baseline gap-x-1.5 font-serif text-sm text-paper-700 dark:text-paper-300"
 				>
-					{#each word.firstPersonSingular as fps (fps)}
+					{#each word.conjugation as conjugation (conjugation)}
 						<span
 							class="not-first:before:mr-1.5 not-first:before:text-paper-300 not-first:before:content-['·'] dark:not-first:before:text-paper-700"
 						>
-							ich {fps}
+							{conjugation}
 						</span>
 					{/each}
 				</span>

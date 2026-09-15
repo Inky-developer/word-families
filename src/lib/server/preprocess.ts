@@ -16,8 +16,8 @@ const combineDataSources = (words: Word[], wiktionaryWords: Map<string, Word>): 
 		const wiktionaryEntry = wiktionaryWords.get(wordKey(word));
 		const examples = wiktionaryEntry?.examples || [];
 		const englishTranslations = wiktionaryEntry?.englishTranslations || [];
-		const firstPersonSingular = wiktionaryEntry?.firstPersonSingular || [];
-		return { ...word, examples, englishTranslations, firstPersonSingular };
+		const firstPersonSingular = wiktionaryEntry?.conjugation || [];
+		return { ...word, examples, englishTranslations, conjugation: firstPersonSingular };
 	});
 
 const readLines = async (fileName: string, onLine: (line: string) => void): Promise<void> =>
@@ -64,7 +64,7 @@ const GROUP_WORD_TYPES: Record<string, WordType> = { A: 'Adjective', N: 'Noun', 
 const parseWord = (rawWord: string, groupId: number): Word => {
 	const [word, rawType] = rawWord.split('_', 2);
 	const type = GROUP_WORD_TYPES[rawType] ?? 'Other';
-	return { word, type, groupId, examples: [], englishTranslations: [], firstPersonSingular: [] };
+	return { word, type, groupId, examples: [], englishTranslations: [], conjugation: [] };
 };
 
 const WIKTIONARY_POS_TYPES: Record<string, WordType> = {
@@ -116,6 +116,28 @@ const processWiktionaryTranslation = (translation: WiktionaryTranslation): strin
 	return translations.map((it) => it.replaceAll('( )', () => `(${tags[currentIndex++]})`));
 };
 
+const REQUIRED_TAGS = new Set(['singular']);
+const CONJUGATION_OPTIONS = ['first-person', 'third-person'].flatMap((person) => [
+	new Set([person, 'perfect', 'indicative']),
+	new Set([person, 'perfect']),
+	new Set([person, 'present', 'indicative']),
+	new Set([person, 'present'])
+]);
+
+const findInterestingConjunction = (forms: WiktionaryForm[]): string[] => {
+	const candidates = forms
+		.map((form) => ({ form: form.form, tags: new Set(form.tags ?? []) }))
+		.filter((form) => REQUIRED_TAGS.intersection(form.tags).size == REQUIRED_TAGS.size);
+
+	for (const option of CONJUGATION_OPTIONS) {
+		const matches = candidates.filter((it) => option.intersection(it.tags).size == option.size);
+		if (matches.length > 0) {
+			return matches.map((it) => it.form);
+		}
+	}
+	return [];
+};
+
 const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word>> => {
 	const result = new Map<string, Word>();
 
@@ -159,11 +181,9 @@ const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word
 				.map((it) => it.trim())
 				.filter(Boolean) ?? [])
 		);
-		const firstPersonSingular = uniques(
-			...(prevWord?.firstPersonSingular ?? []),
-			...(entry.forms
-				?.filter((form) => form.pronouns?.includes('ich') && form.tags?.includes('present'))
-				?.map((it) => it.form) || [])
+		const conjugation = uniques(
+			...(prevWord?.conjugation ?? []),
+			...findInterestingConjunction(entry.forms ?? [])
 		);
 
 		const word = {
@@ -171,7 +191,7 @@ const parseWiktionary = async (wiktionaryPath: string): Promise<Map<string, Word
 			type,
 			examples,
 			englishTranslations,
-			firstPersonSingular,
+			conjugation,
 			groupId: -1
 		};
 		result.set(key, word);
